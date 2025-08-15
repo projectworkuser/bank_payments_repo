@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mysql:3306/paymentdb
+    username: payment
+    password: payment_pass
+  jpa:
+    hibernate:
+      ddl-auto: update
+server:
+  port: 8080
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: paymentapp }
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector: { matchLabels: { app: paymentapp } }
+  template:
+    metadata: { labels: { app: paymentapp } }
+    spec:
+      containers:
+        - name: paymentapp
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports: [{ containerPort: 8080 }]
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "{{ .Values.env.spring.datasource.url }}"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "{{ .Values.env.spring.datasource.username }}"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "{{ .Values.env.spring.datasource.password }}"
+          resources:
+            requests: {{ toYaml .Values.resources.requests | nindent 12 }}
+            limits: {{ toYaml .Values.resources.limits | nindent 12 }}
+          livenessProbe:
+            httpGet: { path: /actuator/health, port: 8080 }
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          readinessProbe:
+            httpGet: { path: /actuator/health, port: 8080 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
